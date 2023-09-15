@@ -1,0 +1,38 @@
+{
+  "name": "dependency-graph",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "run-p type-check build-only",
+    "preview": "vite preview",
+    "build-only": "vite build",
+    "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false",
+    "gen-presets": "ts-node cli.ts --type local --path docs/example/pom.xml --name local"
+  },
+  "dependencies": {
+    "@stoplight/spectral-core": "^1.18.3",
+    "@stoplight/spectral-functions": "^1.7.2",
+    "@stoplight/spectral-parsers": "^1.0.3",
+    "@stoplight/spectral-ruleset-bundler": "^1.5.2",
+    "@stoplight/spectral-ruleset-migrator": "^1.9.5",
+    "@stoplight/spectral-rulesets": "^1.17.0",
+    "@telekom/scale-components": "^3.0.0-beta.137",
+    "ace-builds": "^1.25.1",
+    "js-yaml": "^4.1.0",
+    "vue": "^3.3.4"
+  },
+  "devDependencies": {
+    "@tsconfig/node18": "^18.2.0",
+    "@types/js-yaml": "^4.0.5",
+    "@types/node": "^18.17.0",
+    "@vitejs/plugin-vue": "^4.2.3",
+    "@vue/tsconfig": "^0.4.0",
+    "npm-run-all": "^4.1.5",
+    "resize-observer-polyfill": "^1.5.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.9.5",
+    "vite": "^4.4.6",
+    "vue-tsc": "^1.8.6"
+  }
+}
