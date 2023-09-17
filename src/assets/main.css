@@ -6,3 +6,22 @@
 
   font-weight: normal;
 }
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--telekom-color-ui-faint);
+  border-radius: 1ch;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--telekom-color-ui-regular);
+  border-radius: 1ch;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--telekom-color-text-and-icon-primary-standard);
+}

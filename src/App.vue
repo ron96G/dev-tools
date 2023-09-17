@@ -1,49 +1,17 @@
 <script setup lang="ts">
-import { ref, type Ref } from 'vue';
-import LoadingOverlay from './components/LoadingOverlay.vue';
+import { ref } from 'vue';
 import LightDarkModeSwitch from './components/LightDarkModeSwitch.vue';
-import Notifications from './components/Notifications.vue';
 import OpenAPIValidator from './views/OpenAPIValidator.vue';
-import Beautifier from './views/Beautifier.vue';
 
-import type { Event } from './libs/common';
-
-
-let showGraph: Ref<boolean> = ref(false);
-let progress: Ref<number> = ref(0);
-let loading: Ref<boolean> = ref(false);
-let logs: Ref<Array<string>> = ref([]);
-let errors: Ref<Array<string>> = ref([])
-
-function onProgress(p: number) {
-  loading.value = true
-  progress.value = p > 100 ? 100 : p
-}
-
-
-function onLogs(e: Event) {
-  console.log(`${e.level}: ${e.message}`)
-  if (e.level === 'error') {
-    console.log('received error')
-    errors.value.push(e.message)
-  } else {
-    logs.value.push(`${e.level}: ${e.message}`)
-  }
-}
+const isDarkMode = ref(true)
 
 </script>
 
 <template>
   <main>
-    <LightDarkModeSwitch />
-    <Notifications :in-errors="errors" />
+    <LightDarkModeSwitch @init="(val) => isDarkMode = val" @changed="(val) => isDarkMode = val" />
 
-    <LoadingOverlay v-if="loading" :progress="progress" type="progressbar" :logs="logs" />
-
-    <OpenAPIValidator></OpenAPIValidator>
-
-
-    <!-- <Beautifier></Beautifier> -->
+    <OpenAPIValidator :theme="isDarkMode ? 'dark' : 'light'"></OpenAPIValidator>
 
   </main>
 </template>
@@ -57,5 +25,9 @@ function onLogs(e: Event) {
   -webkit-user-select: none;
   -ms-user-select: none;
   user-select: none;
+}
+
+body {
+  overflow: hidden;
 }
 </style>

@@ -1,17 +1,15 @@
 <script setup lang="ts">
-import { markRaw, onMounted, ref, watch, type Ref, onUnmounted, computed } from 'vue';
+import { markRaw, onMounted, ref, watch, type Ref, onUnmounted } from 'vue';
 import ace from 'ace-builds';
 import ResizeObserver from 'resize-observer-polyfill';
 import modeJsonUrl from 'ace-builds/src-noconflict/mode-json?url';
 import modeYamlUrl from 'ace-builds/src-noconflict/mode-yaml?url';
 import themeChromeUrl from 'ace-builds/src-noconflict/theme-chrome?url';
-import themeTwilightUrl from 'ace-builds/src-noconflict/theme-twilight?url';
 import themeTomorrowNightUrl from 'ace-builds/src-noconflict/theme-tomorrow_night_eighties?url';
 
 ace.config.setModuleUrl('ace/mode/json', modeJsonUrl);
 ace.config.setModuleUrl('ace/mode/yaml', modeYamlUrl);
 ace.config.setModuleUrl('ace/theme/chrome', themeChromeUrl);
-ace.config.setModuleUrl('ace/theme/twilight', themeTwilightUrl);
 ace.config.setModuleUrl('ace/theme/tomorrow_night_eighties', themeTomorrowNightUrl);
 
 export interface AnnotationItem {
@@ -72,12 +70,17 @@ watch(() => props.value, async (newValue) => {
     editor.value?.setValue(newValue)
 })
 
+watch(() => props.theme, async (newTheme) => {
+    editor.value?.setTheme('ace/theme/' + newTheme)
+})
+
 watch(() => props.lang, async (newLang) => {
     editor.value?.session.setMode('ace/mode/' + newLang)
 })
 
-watch(() => props.focusLine, async (newFocusLine) => {
+watch(() => props.focusLine, (newFocusLine) => {
     if (!newFocusLine || newFocusLine < 1) return
+    console.log(`jump to ${newFocusLine}`)
     editor.value?.gotoLine(newFocusLine, 0, false)
     editor.value?.selection.moveCursorToPosition({ row: newFocusLine, column: 0 })
 })
@@ -143,5 +146,18 @@ onUnmounted(() => {
 <style scoped>
 .editor {
     height: 800px;
+}
+
+body .ace_scrollbar {
+    -webkit-transition: opacity .3s ease-in-out;
+    -moz-transition: opacity .3s ease-in-out;
+    -ms-transition: opacity .3s ease-in-out;
+    -o-transition: opacity .3s ease-in-out;
+    transition: opacity .3s ease-in-out;
+    opacity: 0;
+}
+
+body .ace_editor:hover .ace_scrollbar {
+    opacity: 1;
 }
 </style>

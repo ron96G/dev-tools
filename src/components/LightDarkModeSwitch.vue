@@ -1,12 +1,23 @@
 <script setup lang="ts">
+import { onMounted } from 'vue';
+
 
 const mq = window.matchMedia('(prefers-color-scheme: dark)');
 let isDark = mq.matches;
 
+const emit = defineEmits(['init', 'changed'])
+
+
 function switchMode() {
     document.body.dataset.mode = isDark ? 'light' : 'dark';
     isDark = !isDark
+    emit('changed', isDark)
 }
+
+onMounted(() => {
+    emit('init', isDark)
+})
+
 </script>
 
 
