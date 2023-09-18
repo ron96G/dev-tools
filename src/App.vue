@@ -28,6 +28,6 @@ const isDarkMode = ref(true)
 }
 
 body {
-  overflow: hidden;
+  overflow: auto;
 }
 </style>

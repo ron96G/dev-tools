@@ -123,28 +123,27 @@ async function onImport(obj: any) {
 
     <div id="openapi-validator-wrapper">
         <div id="content">
-            <div id="text-editor-wrapper">
-                <div id="controls-wrapper">
-                    <div id="ruleset-wrapper" class="controls-item">
-                        <scale-dropdown-select label="Select Ruleset" :value="selectedRuleset"
-                            @scale-change="onUpdatedSelectedRuleset">
-                            <template v-for="ruleset in supportedRulesets">
-                                <scale-dropdown-select-item :value="ruleset">{{ ruleset
-                                }}</scale-dropdown-select-item>
-                            </template>
-                        </scale-dropdown-select>
-                    </div>
-                    <scale-button class="controls-item" @click="showImportPopup = true"> Import </scale-button>
-                    <scale-button class="controls-item" @click="jumpToLine(1)"> Jump
-                        To Top</scale-button>
-                    <scale-button class="controls-item" @click="formatInput"> Format</scale-button>
-                    <scale-button class="controls-item" @click="convertInput"> Convert (json/yaml)</scale-button>
-                    <scale-button class="controls-item" @click="resetAll"> Reset</scale-button>
+            <div id="controls-wrapper">
+                <div id="ruleset-wrapper" class="controls-item">
+                    <scale-dropdown-select label="Select Ruleset" :value="selectedRuleset"
+                        @scale-change="onUpdatedSelectedRuleset">
+                        <template v-for="ruleset in supportedRulesets">
+                            <scale-dropdown-select-item :value="ruleset">{{ ruleset
+                            }}</scale-dropdown-select-item>
+                        </template>
+                    </scale-dropdown-select>
                 </div>
-
-                <TextEditor id="input-editor" :value="input" :lang="inputType" @update:value="onChange" @init="onInit"
-                    :annotations="annotations" :focusLine="focusLine" :theme="editorTheme"></TextEditor>
+                <scale-button class="controls-item" @click="showImportPopup = true"> Import </scale-button>
+                <scale-button class="controls-item" @click="jumpToLine(1)"> Jump
+                    To Top</scale-button>
+                <scale-button class="controls-item" @click="formatInput"> Format</scale-button>
+                <scale-button class="controls-item" @click="convertInput"> Convert (json/yaml)</scale-button>
+                <scale-button class="controls-item" @click="resetAll"> Reset</scale-button>
             </div>
+
+            <TextEditor id="input-editor" :value="input" :lang="inputType" @update:value="onChange" @init="onInit"
+                :annotations="annotations" :focusLine="focusLine" :theme="editorTheme"></TextEditor>
+
 
             <IntoTable :infos="annotations" @jump-to-line="jumpToLine"></IntoTable>
         </div>
@@ -176,7 +175,7 @@ async function onImport(obj: any) {
     max-width: 300px;
 }
 
-#text-editor-wrapper {
-    height: 50%;
+#input-editor {
+    height: 60vh;
 }
 </style>
