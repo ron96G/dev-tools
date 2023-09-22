@@ -42,17 +42,22 @@ async function uploadFile(e: Event) {
 }
 
 async function downloadFile() {
-    const res = await fetch(downloadUrl.value)
-    if (res.status === 200) {
-        const text = await res.text()
-        emit('imported', {
-            name: downloadUrl.value.split("/")[-1],
-            text: text,
-        })
-        show.value = false
-    } else {
-        console.log(res.status)
+    try {
+        const res = await fetch(downloadUrl.value)
+        if (res.status === 200) {
+            const text = await res.text()
+            emit('imported', {
+                name: downloadUrl.value.split("/")[-1],
+                text: text,
+            })
+            show.value = false
+        } else {
+            console.log(res.status)
+        }
+    } catch (e) {
+        console.log(e)
     }
+
 }
 
 async function validateDownloadUrl() {
@@ -78,7 +83,7 @@ onUnmounted(() => {
 
 
 <template>
-    <scale-modal heading="Import" :opened="show" @scale-before-close="show = false">
+    <scale-modal heading="Import a new Ruleset" :opened="show" @scale-before-close="show = false">
         <div id="content-wrapper">
             <label for="text-field">
                 Fetch from URI

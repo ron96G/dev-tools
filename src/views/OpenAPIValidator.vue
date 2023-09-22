@@ -25,12 +25,12 @@ const supportedRulesets: Ref<Array<string>> = ref([])
 const focusLine = ref(0)
 const annotations: Ref<Array<AnnotationItem>> = ref([])
 const input = ref("")
+const valueTracker = ref("")
 const inputType = ref("yaml")
 const showImportPopup = ref(false)
 const selectedRuleset = ref("default")
 
 watch(() => props.theme, (val: string) => {
-    console.log(val)
     if (val === 'dark') {
         editorTheme.value = 'tomorrow_night_eighties'
     } else {
@@ -46,11 +46,11 @@ onMounted(async () => {
 })
 
 async function onInit(editor: Ace.Editor) {
-    input.value = editor.getValue()
+    valueTracker.value = editor.getValue()
 }
 
 async function onChange(value: string) {
-    input.value = value
+    valueTracker.value = value
     try {
         const result = await _linter.lintRaw(value, selectedRuleset.value)
         annotations.value = result
@@ -62,7 +62,7 @@ async function onChange(value: string) {
 
 async function onUpdatedSelectedRuleset(e: any) {
     selectedRuleset.value = e.detail.value;
-    await onChange(input.value)
+    await onChange(valueTracker.value)
 }
 
 function jumpToLine(lineNumber: number) {
@@ -78,23 +78,26 @@ async function resetAll() {
 
 async function formatInput() {
     try {
-        input.value = JSON.stringify(JSON.parse(input.value), null, 2)
+        if (determineInputType(valueTracker.value) == 'json') {
+            input.value = JSON.stringify(JSON.parse(valueTracker.value), null, 2)
+        } else {
+            input.value = YAML.dump(YAML.load(valueTracker.value), { indent: 2 })
+        }
     } catch (e) {
-        // ignore
+        console.log(e)
     }
 }
 
 async function convertInput() {
-    console.log("converting input")
     try {
-        if (determineInputType(input.value) == 'json') {
-            input.value = YAML.dump(JSON.parse(input.value))
+        if (determineInputType(valueTracker.value) == 'json') {
+            input.value = YAML.dump(JSON.parse(valueTracker.value))
         } else {
-            input.value = JSON.stringify(YAML.load(input.value), null, 2)
+            input.value = JSON.stringify(YAML.load(valueTracker.value), null, 2)
         }
 
     } catch (e) {
-        // ignore
+        console.log(e)
     }
 }
 
@@ -108,7 +111,7 @@ async function onImport(obj: any) {
         })
         _localStorage.saveToLocalStorage()
         selectedRuleset.value = obj.name
-        await onChange(input.value)
+        await onChange(valueTracker.value)
 
     } catch (e) {
         console.log(e)
@@ -133,11 +136,11 @@ async function onImport(obj: any) {
                         </template>
                     </scale-dropdown-select>
                 </div>
-                <scale-button class="controls-item" @click="showImportPopup = true"> Import </scale-button>
-                <scale-button class="controls-item" @click="jumpToLine(1)"> Jump
+                <scale-button class="controls-item" @click="showImportPopup = true"> Import<br>Ruleset </scale-button>
+                <scale-button class="controls-item" @click="jumpToLine(1)"> Jump<br>
                     To Top</scale-button>
                 <scale-button class="controls-item" @click="formatInput"> Format</scale-button>
-                <scale-button class="controls-item" @click="convertInput"> Convert (json/yaml)</scale-button>
+                <scale-button class="controls-item" @click="convertInput"> Convert<br>(json/yaml)</scale-button>
                 <scale-button class="controls-item" @click="resetAll"> Reset</scale-button>
             </div>
 

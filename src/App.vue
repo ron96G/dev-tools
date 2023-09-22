@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import LightDarkModeSwitch from './components/LightDarkModeSwitch.vue';
+import LinkCollection from './components/LinkCollection.vue';
 import OpenAPIValidator from './views/OpenAPIValidator.vue';
 
 const isDarkMode = ref(true)
@@ -10,6 +11,7 @@ const isDarkMode = ref(true)
 <template>
   <main>
     <LightDarkModeSwitch @init="(val) => isDarkMode = val" @changed="(val) => isDarkMode = val" />
+    <LinkCollection :theme="isDarkMode ? 'dark' : 'light'"></LinkCollection>
 
     <OpenAPIValidator :theme="isDarkMode ? 'dark' : 'light'"></OpenAPIValidator>
 
