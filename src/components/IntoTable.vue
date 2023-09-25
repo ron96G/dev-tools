@@ -12,9 +12,11 @@ export interface InfoItem {
     end: {
         line: number,
         column: number
-    }
+    },
+    formattedMessage?: string
 }
 
+const URL_REGEX = /((http|ftp|https):\/\/([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#-]))/gi;
 const infos: Ref<Array<InfoItem>> = ref([])
 
 const props = defineProps({
@@ -30,7 +32,9 @@ watch(() => props.infos, (newInfos) => {
 
     infos.value = newInfos.map(item => {
         // escape markdown characters
-        item.message = item.message.replace("~", "\~")
+        item.formattedMessage = item.message.replace("~", "\~")
+        item.formattedMessage = item.formattedMessage.replace(URL_REGEX, "<scale-link href='$1'>$1</scale-link>")
+        item.formattedMessage = item.formattedMessage + ` (${item.code})`
         return item
     })
 })
@@ -48,7 +52,7 @@ watch(() => props.infos, (newInfos) => {
             <template v-for="item in infos">
                 <tr>
                     <td class="column"> {{ item.severity.toUpperCase() }} </td>
-                    <td class="column" style="max-width: 60vw;"> {{ item.message }} ({{ item.code }})</td>
+                    <td class="column" style="max-width: 60vw;" v-html="item.formattedMessage"></td>
                     <td class="column" style="width: 100px;"> <scale-button @click="emit('jumpToLine', item.start)">
                             Jump <br> to {{ item.start.line }}</scale-button>
                     </td>
