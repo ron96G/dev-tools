@@ -1,15 +1,25 @@
 <script setup lang="ts">
 import { Ref, ref, watch } from 'vue';
 
-const infos: Ref<Array<any>> = ref([])
+export interface InfoItem {
+    severity: 'information' | 'warning' | 'error'
+    code: string | number,
+    message: string
+    start: {
+        line: number,
+        column: number
+    }
+    end: {
+        line: number,
+        column: number
+    }
+}
+
+const infos: Ref<Array<InfoItem>> = ref([])
 
 const props = defineProps({
     infos: {
-        type: Array<{
-            severity: string
-            code: string | number,
-            message: string
-        }>,
+        type: Array<InfoItem>,
         default: []
     }
 })
@@ -17,8 +27,14 @@ const props = defineProps({
 const emit = defineEmits(['jumpToLine'])
 
 watch(() => props.infos, (newInfos) => {
-    infos.value = newInfos
+
+    infos.value = newInfos.map(item => {
+        // escape markdown characters
+        item.message = item.message.replace("~", "\~")
+        return item
+    })
 })
+
 </script>
 
 <template>
@@ -33,8 +49,8 @@ watch(() => props.infos, (newInfos) => {
                 <tr>
                     <td class="column"> {{ item.severity.toUpperCase() }} </td>
                     <td class="column" style="max-width: 60vw;"> {{ item.message }} ({{ item.code }})</td>
-                    <td class="column" style="max-width: 5vw;"> <scale-button @click="emit('jumpToLine', item.start.line)">
-                            Jump </scale-button>
+                    <td class="column" style="width: 100px;"> <scale-button @click="emit('jumpToLine', item.start)">
+                            Jump <br> to {{ item.start.line }}</scale-button>
                     </td>
                 </tr>
             </template>
@@ -71,6 +87,7 @@ table {
 }
 
 .column {
+    min-width: 100px;
     text-align: start;
     padding-left: 5px;
 }

@@ -1,10 +1,6 @@
 <script setup lang="ts">
 import { onUnmounted, ref, watch } from 'vue';
 
-const show = ref(false)
-const downloadUrl = ref("")
-const enableFetchButton = ref(false)
-
 const props = defineProps({
     show: {
         type: Boolean,
@@ -14,6 +10,14 @@ const props = defineProps({
 
 const emit = defineEmits(['changed', 'imported'])
 
+// Variables
+
+const show = ref(false)
+const downloadUrl = ref("")
+const enableFetchButton = ref(false)
+
+// Observers
+
 watch(() => props.show, (newVal) => {
     show.value = newVal
 })
@@ -22,8 +26,9 @@ watch(show, () => {
     emit('changed', show.value)
 })
 
+// Actions
 
-async function uploadFile(e: Event) {
+async function doUploadFile(e: Event) {
     const files = (e.target as any)?.files as File[]
     if (files && files.length >= 1) {
         const uploadedFile = files[0]
@@ -41,7 +46,7 @@ async function uploadFile(e: Event) {
     }
 }
 
-async function downloadFile() {
+async function doDownloadFile() {
     try {
         const res = await fetch(downloadUrl.value)
         if (res.status === 200) {
@@ -60,7 +65,9 @@ async function downloadFile() {
 
 }
 
-async function validateDownloadUrl() {
+// Hooks
+
+async function onDownloadUrlChange() {
     if (downloadUrl.value) {
         try {
             new URL(downloadUrl.value)
@@ -89,9 +96,9 @@ onUnmounted(() => {
                 Fetch from URI
             </label>
             <div class="content-item">
-                <scale-text-field v-model="downloadUrl" id="text-field" label="URI" @scale-change="validateDownloadUrl"
+                <scale-text-field v-model="downloadUrl" id="text-field" label="URI" @scale-change="onDownloadUrlChange"
                     style="margin-right: 5px;"></scale-text-field>
-                <scale-button @click="downloadFile" :disabled="!enableFetchButton"> Fetch </scale-button>
+                <scale-button @click="doDownloadFile" :disabled="!enableFetchButton"> Fetch </scale-button>
             </div>
 
             <scale-divider></scale-divider>
@@ -100,7 +107,7 @@ onUnmounted(() => {
                 <label class="label-button" for="file-upload">
                     Upload File
                 </label>
-                <input type="file" id="file-upload" @change="uploadFile">
+                <input type="file" id="file-upload" @change="doUploadFile">
             </div>
         </div>
     </scale-modal>

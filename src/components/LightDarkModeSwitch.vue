@@ -1,14 +1,13 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 
-
 const mq = window.matchMedia('(prefers-color-scheme: dark)');
 let isDark = mq.matches;
 
 const emit = defineEmits(['init', 'changed'])
 
 
-function switchMode() {
+function doSwitchMode() {
     document.body.dataset.mode = isDark ? 'light' : 'dark';
     isDark = !isDark
     emit('changed', isDark)
@@ -24,7 +23,7 @@ onMounted(() => {
 
 <template>
     <div id="light-dark-mode-switch-wrapper">
-        <scale-icon-action-light-dark-mode id="light-dark-mode-switch" @click="switchMode" size="36"
+        <scale-icon-action-light-dark-mode id="light-dark-mode-switch" @click="doSwitchMode" size="36"
             accessibility-title="switch-light-dark-mode">
         </scale-icon-action-light-dark-mode>
     </div>

@@ -14,12 +14,10 @@
 
 ::-webkit-scrollbar-track {
   background: var(--telekom-color-ui-faint);
-  border-radius: 1ch;
 }
 
 ::-webkit-scrollbar-thumb {
   background: var(--telekom-color-ui-regular);
-  border-radius: 1ch;
 }
 
 ::-webkit-scrollbar-thumb:hover {

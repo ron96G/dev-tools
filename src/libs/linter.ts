@@ -1,9 +1,7 @@
 import { Ruleset, Spectral, type RulesetDefinition, type ISpectralDiagnostic, Document } from "@stoplight/spectral-core";
 import * as Rulesets from '@stoplight/spectral-rulesets'
 import { bundleAndLoadRuleset } from "@stoplight/spectral-ruleset-bundler/with-loader";
-import type { AnnotationItem } from "@/components/TextEditor.vue";
 import { type IParser, Json as JsonParser, Yaml as YamlParser } from "@stoplight/spectral-parsers";
-
 
 import { Storage } from "@/libs/storage";
 
@@ -11,6 +9,20 @@ export interface RuleRef {
     name: string
     href?: string
     value?: string
+}
+
+export interface ResultItem {
+    severity: 'information' | 'warning' | 'error'
+    code: string | number,
+    message: string
+    start: {
+        line: number,
+        column: number
+    }
+    end: {
+        line: number,
+        column: number
+    }
 }
 
 export class Linter {
@@ -112,7 +124,7 @@ export function determineInputType(input: string) { // TODO improve this
     return 'yaml'
 }
 
-function determineSeverity(severity: number, code: string | number): AnnotationItem['severity'] {
+function determineSeverity(severity: number, code: string | number): ResultItem['severity'] {
     if (code === "unrecognized-format") {
         return 'error'
     }
@@ -121,26 +133,25 @@ function determineSeverity(severity: number, code: string | number): AnnotationI
     } else if (severity == 1) {
         return "warning"
     }
-    return "warning" // TODO add custom annotation type for info
+    return "information"
 }
 
 function formatResult(inputs: Array<ISpectralDiagnostic>) {
-    const results: Array<AnnotationItem> = []
+    const results: Array<ResultItem> = []
 
     for (const input of inputs) {
         results.push({
             message: input.message,
             start: {
-                line: input.range.start.line,
-                char: input.range.start.character
+                line: input.range.start.line + 1,
+                column: input.range.start.character + 1
             },
             end: {
-                line: input.range.end.line,
-                char: input.range.end.character
+                line: input.range.end.line + 1,
+                column: input.range.end.character + 1
             },
             severity: determineSeverity(input.severity, input.code),
-            code: input.code,
-            action: "unknown"
+            code: input.code
         })
     }
 

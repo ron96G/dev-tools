@@ -17,8 +17,9 @@
     "@stoplight/spectral-ruleset-migrator": "^1.9.5",
     "@stoplight/spectral-rulesets": "^1.17.0",
     "@telekom/scale-components": "^3.0.0-beta.137",
-    "ace-builds": "^1.25.1",
     "js-yaml": "^4.1.0",
+    "monaco-editor": "^0.43.0",
+    "monaco-yaml": "^5.1.0",
     "vue": "^3.3.4"
   },
   "devDependencies": {
@@ -27,6 +28,7 @@
     "@types/node": "^18.17.0",
     "@vitejs/plugin-vue": "^4.2.3",
     "@vue/tsconfig": "^0.4.0",
+    "monaco-editor-webpack-plugin": "^7.1.0",
     "npm-run-all": "^4.1.5",
     "resize-observer-polyfill": "^1.5.1",
     "ts-node": "^10.9.1",
