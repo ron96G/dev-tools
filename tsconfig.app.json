@@ -12,6 +12,7 @@
   "compilerOptions": {
     "composite": true,
     "moduleResolution": "NodeNext",
+    "module": "NodeNext",
     "verbatimModuleSyntax": false,
     "baseUrl": ".",
     "paths": {
