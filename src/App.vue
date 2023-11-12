@@ -11,10 +11,8 @@ const isDarkMode = ref(true)
 <template>
   <main>
     <LightDarkModeSwitch @init="(val) => isDarkMode = val" @changed="(val) => isDarkMode = val" />
-    <LinkCollection :theme="isDarkMode ? 'dark' : 'light'"></LinkCollection>
-
     <OpenAPIValidator :theme="isDarkMode ? 'dark' : 'light'"></OpenAPIValidator>
-
+    <LinkCollection :theme="isDarkMode ? 'dark' : 'light'"></LinkCollection>
   </main>
 </template>
 
