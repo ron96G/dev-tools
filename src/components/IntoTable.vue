@@ -19,6 +19,18 @@ export interface InfoItem {
 const URL_REGEX = /((http|ftp|https):\/\/([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#-]))/gi;
 const infos: Ref<Array<InfoItem>> = ref([])
 
+const severityIconMapping = new Map();
+severityIconMapping.set("ERROR", "❌")
+severityIconMapping.set("WARNING", "⚠️")
+severityIconMapping.set("INFORMATION", "✔️")
+
+
+const getMessage = (severity: string) => {
+    severity = severity.toUpperCase()
+    const icon = severityIconMapping.get(severity)
+    return (icon) ? icon : severity
+}
+
 const props = defineProps({
     infos: {
         type: Array<InfoItem>,
@@ -51,7 +63,7 @@ watch(() => props.infos, (newInfos) => {
             </tr>
             <template v-for="item in infos">
                 <tr>
-                    <td class="column"> {{ item.severity.toUpperCase() }} </td>
+                    <td class="column"> {{ getMessage(item.severity) }} </td>
                     <td class="column" style="max-width: 60vw;" v-html="item.formattedMessage"></td>
                     <td class="column" style="width: 100px;"> <scale-button @click="emit('jumpToLine', item.start)">
                             Jump <br> to {{ item.start.line }}</scale-button>
@@ -66,7 +78,7 @@ watch(() => props.infos, (newInfos) => {
 <style scoped>
 #notification-wrapper {
     padding-top: 20px;
-    max-height: 34vh;
+    max-height: 96vh;
     overflow: auto;
 }
 
@@ -91,7 +103,7 @@ table {
 }
 
 .column {
-    min-width: 100px;
+    min-width: 20px;
     text-align: start;
     padding-left: 5px;
 }

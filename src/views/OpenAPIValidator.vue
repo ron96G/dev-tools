@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import { onMounted, ref, type Ref, watch } from "vue";
-import ImportPopup from '@/components/ImportPopup.vue'
-import IntoTable, { InfoItem } from '@/components/IntoTable.vue'
-import TextEditor from '@/components/editor/NextTextEditor.vue'
-import { Linter, determineInputType } from "@/libs/linter";
-import { Storage } from "@/libs/storage";
+import ImportPopup from '@/components/ImportPopup.vue';
+import IntoTable, { InfoItem } from '@/components/IntoTable.vue';
+import TextEditor from '@/components/editor/NextTextEditor.vue';
+import { convertInput, formatInput } from '@/libs/format';
 import { SchemaItem, loadAllSchemas } from "@/libs/json-schema";
-import { convertInput, formatInput } from '@/libs/format'
-import * as log from '@/libs/log'
+import { Linter, determineInputType } from "@/libs/linter";
+import * as log from '@/libs/log';
+import { Storage } from "@/libs/storage";
+import { onMounted, ref, watch, type Ref } from "vue";
+import { DragCol } from 'vue-resizer';
+
 
 const props = defineProps({
     theme: {
@@ -21,6 +23,8 @@ const props = defineProps({
 const _localStorage = Storage.loadFromLocalStorage("index.json")
 const _serverStorage = Storage.loadFromServer("rules/index.json")
 const _linter = new Linter()
+// See beforeunload hook, tracks if there is potential data loss for user
+let changed = false;
 
 const editorTheme = ref('dark')
 const supportedRulesets: Ref<Array<string>> = ref([])
@@ -42,6 +46,13 @@ watch(() => props.theme, (val: string) => {
 })
 
 // Hooks
+// prevent data loss by prompting user to confirm on exit
+window.addEventListener('beforeunload', (event) => {
+    if (changed) {
+        event.preventDefault();
+        return event.returnValue = '';
+    }
+});
 
 onMounted(async () => {
     await _linter.setup(_localStorage)
@@ -58,6 +69,7 @@ async function onInit(editor: any) {
 }
 
 async function onChange(value: string) {
+    changed = true;
     valueTracker.value = value
     inputType.value = determineInputType(value)
     try {
@@ -159,13 +171,18 @@ async function doConvertInput() {
                 <scale-button class="controls-item" @click="doConvertInput"> Convert<br>(json/yaml)</scale-button>
                 <scale-button class="controls-item" @click="doResetAll"> Reset</scale-button>
             </div>
-
-            <TextEditor id="input-editor" :value="input" :lang="inputType" @update:value="onChange" @init="onInit"
-                :annotations="annotations" :focusLine="focusLine" :theme="editorTheme" :schemas="jsonSchemas"
-                :modelFileUri="selectedSchemaVersion"></TextEditor>
-
-
-            <IntoTable :infos="annotations" @jump-to-line="doJumpToLine"></IntoTable>
+            <DragCol width="100vw" height="96vh" sliderHoverColor="#ffffff" sliderBgHoverColor="#e20074"
+                sliderColor="#000000" sliderBgColor="#ffffff" sliderWidth="15" leftPercent="40">
+                <template #left>
+                    <TextEditor id="input-editor" :value="input" :lang="inputType" @update:value="onChange" @init="onInit"
+                        :annotations="annotations" :focusLine="focusLine" :theme="editorTheme" :schemas="jsonSchemas"
+                        :modelFileUri="selectedSchemaVersion">
+                    </TextEditor>
+                </template>
+                <template #right>
+                    <IntoTable :infos="annotations" @jump-to-line="doJumpToLine"></IntoTable>
+                </template>
+            </DragCol>
         </div>
     </div>
 </template>
@@ -186,7 +203,6 @@ async function doConvertInput() {
 
 #content {
     display: block;
-    max-width: 2000px;
     margin: auto;
 }
 
@@ -201,6 +217,6 @@ async function doConvertInput() {
 }
 
 #input-editor {
-    height: 60vh;
+    height: 96vh;
 }
 </style>
